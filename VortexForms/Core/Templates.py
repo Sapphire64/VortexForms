@@ -30,10 +30,11 @@ class Form(object):
     def __init__(self, id, type, additional_params):
         self._id = id
         self._type = type
-        #TODO: parse additional
+        self._params = additional_params
         
     def __str__(self):
-        return '<input id="{id}" type="{type}">'.format(id=self._id, type=self._type)
+        params = ' '.join([key + '="' + value + '"' for (key, value) in self._params.items()])
+        return '<input id="{id}" type="{type}" {params}>'.format(id=self._id, type=self._type, params=params)
 
     @property
     def id(self):

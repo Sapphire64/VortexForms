@@ -55,6 +55,7 @@ class VortexProcessor(object):
         return self._rendered_template
 
 if __name__ == '__main__':
-    tmp = VortexProcessor(code="<p>Hi {{ man|text|width=32|blah= 123|root=broot }} how are you doing ?</p>")
+    tmp = VortexProcessor(code="<form>\n<p>Please enter your name: {{ first_name|text|width=100%|class=input_large green }}</p>\n</form>")
     print (str(tmp.template))
+    print ('')
     print (str(tmp.rendered_template))
