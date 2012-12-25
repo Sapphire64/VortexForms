@@ -51,6 +51,10 @@ class VortexProcessor(object):
         return self._template
 
     @property
+    def html(self):
+        return self._rendered_template
+
+    @property
     def rendered_template(self):
         return self._rendered_template
 
