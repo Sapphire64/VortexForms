@@ -28,7 +28,7 @@ Result:
 
 .. code::
 
-  <p>Your name: <input id="first_name" class="myclass"></p>
+  <p>Your name: <input id="first_name" type="text" class="myclass"></p>
 
 Replace forms with user input
 --------------
