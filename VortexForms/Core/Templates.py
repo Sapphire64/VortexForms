@@ -4,9 +4,7 @@ from Core.Exceptions import ParsingTemplateError
 
 from functools import reduce
 
-
 # Template engine control symbols. A place for limited customization
-
 
 TAG_OPEN_SIGN = '{'
 TAG_CLOSE_SIGN = '}'
@@ -78,12 +76,15 @@ class TemplateProcessor(object):
     adding them into list of forms, forming Form class as an answer.
 
     """
-    def __new__(cls, template_code):
+    def __new__(cls, template_code, values=None):
         cls.stream = iter(template_code)
         cls.rendered_html = []
         cls.forms = []
         cls._signs = ''
         cls._buffer = ''
+        # Appending text, not input forms       
+        cls._mode = bool(values) # True -> means we're appending values, not forms
+        cls._values = values
         # Flags block for parsing
         cls._inside_flag = False
         # Run processor
@@ -161,28 +162,42 @@ class TemplateProcessor(object):
         type = None
         additional_params = {}
         params_text = ''
+
         if check_id_syntax(form[0]):
             id = form.pop(0)
         else:
             raise ParsingTemplateError("Wrong input ID specified. It must be a string with no special signs")
-        if form[0] in INPUT_TYPES:
-            type = form.pop(0)
-        else:
-            raise ParsingTemplateError("Wrong input type specified. It must be one of these: %s" % ",".join(INPUT_TYPES))
 
-        # Checking if we have any additional parameters
-        if form:
-            # Wicked functional construction:
-            # We are splitting additional params by '=' in parse_additional_params function
-            # and then packing them into dict. lambda function with reduce merge this dicts.
-            additional_params = reduce(lambda x, y: dict(x.items() + y.items()), map(build_additional_params, form))
+        if not id:
+            raise ParsingTemplateError("Wrong input ID")
 
-        if not id or not type:
-            raise ParsingTemplateError("Wrong input ID or input type in template")
+        if cls._mode == False:
+            # Dealing with new form (not appending values)
+            if form[0] in INPUT_TYPES:
+                type = form.pop(0)
+            else:
+                raise ParsingTemplateError("Wrong input type specified. It must be one of these: %s" % ",".join(INPUT_TYPES))
 
-        new_form = Form(id=id, type=type, additional_params=additional_params)
+            if not type:
+                raise ParsingTemplateError("Wrong input type")
 
-        # Dealing with new form
-        #import pdb; pdb.set_trace()
-        cls.forms.append(str(new_form))
-        cls.rendered_html += str(new_form)
+            # Checking if we have any additional parameters
+            if form:
+                # Wicked functional construction:
+                # We are splitting additional params by '=' in parse_additional_params function
+                # and then packing them into dict. lambda function with reduce merge this dicts.
+                additional_params = reduce(lambda x, y: dict(x.items() + y.items()), map(build_additional_params, form))
+            new_form = Form(id=id, type=type, additional_params=additional_params)
+            #import pdb; pdb.set_trace()
+            cls.forms.append(str(new_form))
+            cls.rendered_html += str(new_form)
+
+        elif cls._mode == True:
+            # Dealing with values
+            try:
+                value = cls._values.get(id)
+            except AttributeError:
+                raise ParsingValuesError('Bad values provided, please provide dictionary with form values')
+            if not value:
+                value = ''
+            cls.rendered_html += str(value)

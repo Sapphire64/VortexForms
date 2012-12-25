@@ -10,3 +10,6 @@ class ExcessiveAttributesError(Exception):
 class ParsingTemplateError(Exception):
     pass
     
+
+class ParsingValuesError(Exception):
+    pass
