@@ -17,17 +17,18 @@ Write template like this one:
   <p>Your name: {{ first_name|text|class=myclass }}</p>
 
 
-Result:
-
-.. code::
-
-  <p>Your name: <input id="first_name" class="myclass"></p>
-
 Implementation:
 
 .. code::
 
 	>>> VortexProcessor(code="<p>Your name: {{ first_name|text|class=myclass }}</p>").render()
+
+
+Result:
+
+.. code::
+
+  <p>Your name: <input id="first_name" class="myclass"></p>
 
 Replace forms with user input
 --------------
@@ -38,18 +39,20 @@ Use template as usual:
 
   <p>Your name: {{ first_name|text|class=myclass }}</p>
 
-Pass dictionary with values to get next result:
 
-.. code::
-
-  <p>Your name: Vortex</p>
-
-Implementation:
+Pass dictionary with values to processor:
 
 .. code::
 
 	>>> values = {'first_name':'Vortex'}
 	>>> VortexProcessor(code="<p>Your name: {{ first_name|text|class=myclass }}</p>").render(values)
+
+
+Result:
+
+.. code::
+
+  <p>Your name: Vortex</p>
 
 
 TODO
